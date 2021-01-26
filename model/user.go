@@ -26,15 +26,6 @@ const (
 	anonymousUserPrivilege = 100
 )
 
-//HandleReason 代表着 存档原因/分类
-var HandleReason map[int]string = map[int]string{
-	0: "admin delete",
-	1: "admin ban",
-	2: "admin unDelete",
-	3: "admin unBan",
-	4: "user delet",
-	5: "user edit",
-}
 
 // User 表 包含着 参与讨论的对象
 type User struct {

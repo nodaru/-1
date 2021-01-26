@@ -17,7 +17,7 @@ const (
 
 // Post 指代 帖子相关的内容
 type Post struct {
-	ID            int
+	ID            int  `gorm:"primaryKey;autoIncrement;not null"`
 	PostHistory   PostHistory
 	PostAgreement PostAgreement
 	UserInfoID    int
@@ -32,7 +32,7 @@ type Post struct {
 
 // PostHistory 历史记录表 记录修改信息
 type PostHistory struct {
-	PostID    int
+	PostID    int  `gorm:"primaryKey;index"`
 	OUrl      string
 	CreateAt  time.Time      `gorm:"index"`
 	UpdatedAt time.Time      `gorm:"index"`
@@ -41,7 +41,7 @@ type PostHistory struct {
 
 //PostAgreement 记录帖子被赞赏 举报 喜爱的次数
 type PostAgreement struct {
-	PostID     int
+	PostID     int  `gorm:"primaryKey;index"`
 	NumLike    int
 	NumDislike int
 	NumReport  int

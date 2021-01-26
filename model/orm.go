@@ -11,8 +11,7 @@ func CreateDB() {
 	if err != nil {
 		panic("failed to connect database")
 	}
-
 	// 迁移 schema
 	db.AutoMigrate(&User{}, &UserInfo{}, &Post{}, &PostAgreement{}, &PostHistory{},
-		&Comment{}, &CommentAgreement{}, &CommentHistory{})
+		&Comment{}, &CommentAgreement{}, &CommentHistory{}, &Report{}, &Edit{}, &Ban{})
 }
