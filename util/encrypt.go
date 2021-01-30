@@ -12,6 +12,7 @@ func Hash(str string) string {
 	h.Write([]byte(str))
 	return hex.EncodeToString(h.Sum(nil))
 }
+
 //HashPass return a hashed pass
 func HashPass(password string, salt string) string {
 	return Hash(salt + Hash(strings.ToLower(password)))
