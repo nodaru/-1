@@ -8,6 +8,7 @@ import (
 //SysNoticeType 是系统通知的类型
 var SysNoticeType map[int]string = map[int]string{
 	1:"新增回复",
+	2:"系统通知",
 }
 
 //SysNotice 是系统推送的通知

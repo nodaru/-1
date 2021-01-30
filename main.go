@@ -5,5 +5,5 @@ import (
 )
 
 func main(){
-	model.CreateDB()
+	model.MigrateDB()
 }
