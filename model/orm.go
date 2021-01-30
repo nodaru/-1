@@ -5,10 +5,10 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
-	"fmt"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 var db *gorm.DB
@@ -21,7 +21,7 @@ func init(){
 //InitDB will init db
 func InitDB() {
 	var err error
-	db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err = gorm.Open(sqlite.Open("D:/Lux/src/go/-1/test.db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -38,17 +38,14 @@ func MigrateDB() {
 //TODO： 完成业务逻辑
 
 //CreateNormalUser will create a normal user
-func CreateNormalUser(name string, email string, passwordEncyrpt string) (user User, err error) {
-	if isEmailExsisted(email){
-		return User{}, errors.New("email have been regisisted")
-	}
+func CreateNormalUser(name string, email string, passwordEncyrpt string) (user *User, err error) {
 	salt := make([]byte, 20)
 	_, _err := rand.Read(salt)
 	if _err != nil {
 		panic(_err)
 	}
 	passwordEncyrpt = util.HashPass(passwordEncyrpt, hex.EncodeToString(salt))
-	user = User{
+	user = &User{
 		Privilege:     normalUserPrivilege,
 		Salt:          hex.EncodeToString(salt),
 		EncryptedPass: passwordEncyrpt,
@@ -57,44 +54,54 @@ func CreateNormalUser(name string, email string, passwordEncyrpt string) (user U
 			Contact:  email,
 		},
 	}
-	db.Create(&user)  //TODO email conflict logic
-	err = db.Error
+	result := db.Create(user)
+	err = result.Error
 	return
-}
-func isEmailExsisted(email string) bool {
-	userinfo := UserInfo{}
-	result :=db.Where("Contact=?",email).Find(&userinfo)
-	if userinfo.ID == 0 || errors.Is(result.Error,gorm.ErrRecordNotFound) {
-		return false
-	}
-	return true
 }
 
 //GetUserByID will get a user struct by uid
-func GetUserByID(uid int) (user User, err error) {
-	user = User{}
-	db.Find(&user,uid)
-	fmt.Println(user.ID)
-	if user.ID == 0{
-		panic("User does not exist")
+func GetUserByID(uid int) (user *User, err error) {
+	user = &User{}
+	result := db.Find(&user,uid)
+	if user.ID == 0 || result.RowsAffected == 0{
+		err = errors.New("user does not existed")
+	}else{
+		err = db.Preload("UserInfo.Post").Preload("UserInfo.Comment").Preload(clause.Associations).Find(&user).Error
 	}
-	err = db.Model(&user).Association("UserInfo").Find(&user.UserInfo)
-	return 
+	return
 }
 
+//GetPostByID will get a post by pid
+func GetPostByID(pid int) (post *Post,err error){
+post = &Post{}
+result := db.Find(&post,pid)
+if post.ID == 0 || result.RowsAffected == 0{
+	err = errors.New("post does not existed")
+}else{
+	err = db.Preload(clause.Associations).Find(post,pid).Error
+}
+return
+}
 
-//CreatPost will create a post
-func CreatPost(uid int,path string) (Post, error){
-	user,err:= GetUserByID(uid)
-	if err != nil {
-		panic(err)
-	}
-	post := Post{
+//CreatePost will create a post
+func (user *User) CreatePost(pathToFile string) (*Post, error){
+	post := &Post{
 		UserInfoID: user.UserInfo.ID,
-		TUrl: path,
+		TUrl: pathToFile,
 		Status: normal,
 	}
 	db.Create(&post)
-	err = db.Error
+	err := db.Error
 	return post,err
+}
+
+//CreateComment will create a comment
+func (user *User) CreateComment(pathToFile string,post *Post) (*Comment, error){
+	comment := &Comment{
+		UserInfoID: user.UserInfo.ID,
+		Curl: pathToFile,
+		PostID: post.ID,
+	}
+	//TODO: finins this func
+	return comment,nil
 }

@@ -19,7 +19,7 @@ type SysNotice struct{
 	SysNoticeTypeKey int
 	SysNoticeContent string
 	IsRead bool
-	CreateAt     time.Time      `gorm:"index"`
+	CreatedAt     time.Time      `gorm:"index"`
 	UpdatedAt    time.Time      `gorm:"index"`
 	DeletedAt    gorm.DeletedAt `gorm:"index"`
 }

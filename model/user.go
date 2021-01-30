@@ -34,7 +34,7 @@ type User struct {
 	EncryptedPass string
 	Salt          string
 	UserInfo      UserInfo
-	CreateAt      time.Time      `gorm:"index"`
+	CreatedAt      time.Time      `gorm:"index"`
 	UpdatedAt     time.Time      `gorm:"index"`
 	DeletedAt     gorm.DeletedAt `gorm:"index"`
 }
@@ -49,7 +49,7 @@ type UserInfo struct {
 	Post       []Post
 	Comment    []Comment
 	Birthday   time.Time
-	CreateAt   time.Time      `gorm:"index"`
+	CreatedAt   time.Time      `gorm:"index"`
 	UpdatedAt  time.Time      `gorm:"index"`
 	DeletedAt  gorm.DeletedAt `gorm:"index"`
 }

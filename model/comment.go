@@ -11,7 +11,7 @@ type Comment struct {
 	Curl       string
 	PostID     int
 	UserInfoID int
-	CreateAt   time.Time      `gorm:"index"`
+	CreatedAt  time.Time      `gorm:"index"`
 	UpdatedAt  time.Time      `gorm:"index"`
 	DeletedAt  gorm.DeletedAt `gorm:"index"`
 	Status     state
@@ -28,7 +28,7 @@ type CommentAgreement struct {
 	NumLike    int
 	NumDislike int
 	NumReport  int
-	CreateAt   time.Time      `gorm:"index"`
+	CreatedAt  time.Time      `gorm:"index"`
 	UpdatedAt  time.Time      `gorm:"index"`
 	DeletedAt  gorm.DeletedAt `gorm:"index"`
 }
@@ -37,7 +37,7 @@ type CommentAgreement struct {
 type CommentHistory struct {
 	CommentID int `gorm:"primaryKey;index"`
 	OUrl      string
-	CreateAt  time.Time      `gorm:"index"`
+	CreatedAt time.Time      `gorm:"index"`
 	UpdatedAt time.Time      `gorm:"index"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
