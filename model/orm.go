@@ -4,7 +4,6 @@ import (
 	"111/util"
 	"crypto/rand"
 	"encoding/hex"
-	"errors"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -13,7 +12,7 @@ import (
 
 var db *gorm.DB
 
-func init(){
+func init() {
 	InitDB()
 	MigrateDB()
 }
@@ -35,7 +34,7 @@ func MigrateDB() {
 		&Comment{}, &CommentAgreement{}, &CommentHistory{}, &Report{}, &Edit{}, &Ban{}, &SysNotice{})
 }
 
-//TODO： 完成业务逻辑
+//TODO： 完成逻辑
 
 //CreateNormalUser will create a normal user
 func CreateNormalUser(name string, email string, passwordEncyrpt string) (user *User, err error) {
@@ -62,46 +61,62 @@ func CreateNormalUser(name string, email string, passwordEncyrpt string) (user *
 //GetUserByID will get a user struct by uid
 func GetUserByID(uid int) (user *User, err error) {
 	user = &User{}
-	result := db.Find(&user,uid)
-	if user.ID == 0 || result.RowsAffected == 0{
-		err = errors.New("user does not existed")
-	}else{
+	result := db.Find(&user, uid)
+	if user.ID == 0 || result.RowsAffected == 0 {
+		err = ERR_USER_DOES_NOT_EXISTED
+	} else {
 		err = db.Preload("UserInfo.Post").Preload("UserInfo.Comment").Preload(clause.Associations).Find(&user).Error
 	}
 	return
 }
 
 //GetPostByID will get a post by pid
-func GetPostByID(pid int) (post *Post,err error){
-post = &Post{}
-result := db.Find(&post,pid)
-if post.ID == 0 || result.RowsAffected == 0{
-	err = errors.New("post does not existed")
-}else{
-	err = db.Preload(clause.Associations).Find(post,pid).Error
+func GetPostByID(pid int) (post *Post, err error) {
+	post = &Post{}
+	result := db.Find(&post, pid)
+	if post.ID == 0 || result.RowsAffected == 0 {
+		err = ERR_POST_DOES_NOT_EXISTED
+	} else {
+		err = db.Preload("Comment.RefComment").Preload(clause.Associations).Find(post, pid).Error
+	}
+	return
 }
-return
+
+//GetCommentByID will get a comment by cid
+func GetCommentByID(cid int) (comment *Comment, err error) {
+	comment = &Comment{}
+	result := db.Preload(clause.Associations).Find(&comment, cid)
+	if comment.ID == 0 || result.RowsAffected == 0 {
+		err = ERR_COMMENT_DOES_NOT_EXISTED
+	} else {
+		err = result.Error
+	}
+	return
 }
 
 //CreatePost will create a post
-func (user *User) CreatePost(pathToFile string) (*Post, error){
+func (user *User) CreatePost(pathToFile string) (*Post, error) {
 	post := &Post{
 		UserInfoID: user.UserInfo.ID,
-		TUrl: pathToFile,
-		Status: normal,
+		TUrl:       pathToFile,
+		Status:     state_normal,
 	}
-	db.Create(&post)
-	err := db.Error
-	return post,err
+	result := db.Create(&post)
+	err := result.Error
+	return post, err
 }
 
 //CreateComment will create a comment
-func (user *User) CreateComment(pathToFile string,post *Post) (*Comment, error){
+func (user *User) CreateComment(pathToFile string, post *Post, referComment *Comment) (*Comment, error) {
 	comment := &Comment{
-		UserInfoID: user.UserInfo.ID,
-		Curl: pathToFile,
-		PostID: post.ID,
+		UserInfoID:   user.UserInfo.ID,
+		Curl:         pathToFile,
+		PostID:       post.ID,
+		RefComment:   referComment,
+		RefCommentID: &referComment.ID,
+		Status:       state_normal,
 	}
-	//TODO: finins this func
-	return comment,nil
+	result := db.Create(comment)
+	err := result.Error
+	return comment, err
 }

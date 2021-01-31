@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"gorm.io/gorm"
 )
 
@@ -19,7 +18,24 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	if u.UserInfo.ID == 0 ||result.RowsAffected == 0 {
 		err = nil
 	}else{
-		err = errors.New("email have been regisisted")
+		err = ERR_EMAIL_HAVE_BEEN_REGISTED
 	}
+	return
+}
+
+//AfterCreate -> Comment, init the first comment
+func (c *Comment) AfterCreate(tx *gorm.DB) (err error) {
+	if c.ID == 1 {
+		err = tx.Model(c).Update("Status", state_block).Update("Curl","/null").Error
+	}else{
+		if c.RefComment.ID == 0{
+		err = tx.Model(c).Update("RefCommentID", 1).Error
+		}
+	}
+	return
+}
+
+//AfterCreate -> Post, init the first Post
+func (p *Post) AfterCreate(tx *gorm.DB) (err error) {
 	return
 }

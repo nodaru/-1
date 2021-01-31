@@ -43,7 +43,7 @@ type Report struct {
 	//ReportReason 是用户提交的附加信息
 	ReportReason string
 	BanID        int
-	CreatedAt     time.Time      `gorm:"index"`
+	CreatedAt    time.Time      `gorm:"index"`
 	UpdatedAt    time.Time      `gorm:"index"`
 	DeletedAt    gorm.DeletedAt `gorm:"index"`
 }
@@ -61,22 +61,22 @@ type Edit struct {
 	EditedUser      User
 	EditedUserID    int
 	HandleReasonKey int
-	CreatedAt        time.Time      `gorm:"index"`
+	CreatedAt       time.Time      `gorm:"index"`
 	UpdatedAt       time.Time      `gorm:"index"`
 	DeletedAt       gorm.DeletedAt `gorm:"index"`
 }
 
 //Ban 是与封禁用户相关的表
 type Ban struct {
-	ID           int
-	BanUser      User
-	BanUserID    int
-	BanedUser    User
+	ID          int
+	BanUser     User
+	BanUserID   int
+	BanedUser   User
 	BanedUserID int
-	Report       []Report
-	BanReason    string
-	ExpireAt     time.Time
-	CreatedAt     time.Time      `gorm:"index"`
-	UpdatedAt    time.Time      `gorm:"index"`
-	DeletedAt    gorm.DeletedAt `gorm:"index"`
+	Report      []Report
+	BanReason   string
+	ExpireAt    time.Time
+	CreatedAt   time.Time      `gorm:"index"`
+	UpdatedAt   time.Time      `gorm:"index"`
+	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }

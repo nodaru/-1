@@ -11,15 +11,15 @@ type Comment struct {
 	Curl       string
 	PostID     int
 	UserInfoID int
+	Status     state
+	//自引用的Comment
+	RefCommentID        *int
+	RefComment          *Comment
+	CommentAgreement CommentAgreement `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	CommentHistory   CommentHistory   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	CreatedAt  time.Time      `gorm:"index"`
 	UpdatedAt  time.Time      `gorm:"index"`
 	DeletedAt  gorm.DeletedAt `gorm:"index"`
-	Status     state
-	//自引用的Comment
-	CommentID        *int
-	Comment          *Comment
-	CommentAgreement CommentAgreement `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	CommentHistory   CommentHistory   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 //CommentAgreement 记录帖子被赞赏 举报 喜爱的次数

@@ -5,16 +5,6 @@ import (
 	"time"
 )
 
-type state int
-
-const (
-	nice    state = 1
-	normal  state = 0
-	deleted state = -2
-	edited  state = -1
-	pined   state = 2
-)
-
 // Post 指代 帖子相关的内容
 type Post struct {
 	ID            int `gorm:"primaryKey;autoIncrement;not null"`
