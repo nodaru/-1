@@ -11,6 +11,7 @@ type User struct {
 	Privilege     int
 	EncryptedPass string
 	Salt          string
+	NumReport     int
 	UserInfo      UserInfo
 	CreatedAt     time.Time      `gorm:"index"`
 	UpdatedAt     time.Time      `gorm:"index"`
@@ -30,4 +31,18 @@ type UserInfo struct {
 	CreatedAt  time.Time      `gorm:"index"`
 	UpdatedAt  time.Time      `gorm:"index"`
 	DeletedAt  gorm.DeletedAt `gorm:"index"`
+}
+
+//Agreement 记录帖子被赞赏 举报 喜爱的次数
+type Agreement struct {
+	ID        int `gorm:"primaryKey;index"`
+	User      User
+	UserID    int
+	Post      Post
+	PostID    int
+	Comment   Comment
+	CommentID int
+	CreatedAt time.Time      `gorm:"index"`
+	UpdatedAt time.Time      `gorm:"index"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }

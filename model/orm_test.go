@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -11,8 +12,8 @@ var (
 		pass     string
 		expected error
 	}{
-		{name: "aow", email: "admin@mails.tsinghua.edu.cn", pass: "124141241", expected: nil},
-		{name: "rux", email: "pp@mails.tsinghua.edu.cn", pass: "124adaf1", expected: nil},
+		{name: "aow", email: "admin@mails.tsinghua.edu.cn", pass: "124141241", expected: ERR_EMAIL_HAVE_BEEN_REGISTED},
+		{name: "rux", email: "pp@mails.tsinghua.edu.cn", pass: "124adaf1", expected: ERR_EMAIL_HAVE_BEEN_REGISTED},
 		{name: "rux", email: "pp@mails.tsinghua.edu.cn", pass: "124adaf1", expected: ERR_EMAIL_HAVE_BEEN_REGISTED},
 	}
 	case2 = []struct {
@@ -47,6 +48,25 @@ var (
 		{uid: 1, expected: nil},
 		{uid: 2, expected: nil},
 		{uid: 0, expected: ERR_USER_DOES_NOT_EXISTED}}
+	case6 = []struct{
+		uid int
+		ruid int
+		reason int
+		pid int
+		cid int
+		expected error
+	}{
+		// 以下对应三个类别的举报 pid cid 为1则代表指向默认的记录
+		{uid: 1,ruid: 2,reason: 1,pid: 1,cid: 2,expected:nil},
+		{uid: 1,ruid: 2,reason: 1,pid: 1,cid: 1,expected:nil},
+		{uid: 1,ruid: 2,reason: 1,pid: 2,cid: 1,expected:nil},
+	}
+	case7 = []struct{
+		pid int
+		expected error
+	}{
+		{pid: 1,expected:nil},
+	}
 )
 
 func TestCreateNormalUser(t *testing.T) {
@@ -91,6 +111,33 @@ func TestCreateComment(t *testing.T) {
 func TestGetUserByID(t *testing.T) {
 	for _, c := range case5 {
 		if _, err := GetUserByID(c.uid); err != c.expected {
+			t.Errorf("%v", err)
+		}
+	}
+}
+
+func TestCreateReport(t *testing.T) {
+	for _, c := range case6 {
+		u,_:= GetUserByID(c.cid)
+		ru,_ := GetUserByID(c.ruid)
+		post,_:=GetPostByID(c.pid)
+		comment,_ :=GetCommentByID(c.cid)
+		_,err :=u.CreateReport(ru,post,comment,c.reason)
+		if err != c.expected {
+			t.Errorf("%v", err)
+		}
+	}
+}
+
+
+func TestGetAllComment(t *testing.T) {
+	for _, c := range case7 {
+		post,_:=GetPostByID(c.pid)
+		cm,err :=post.GetAllComment()
+		for i,x := range *cm{
+			fmt.Println("INDEX",i,x.ID,x.Curl)
+		}
+		if err != c.expected {
 			t.Errorf("%v", err)
 		}
 	}

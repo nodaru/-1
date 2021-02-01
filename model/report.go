@@ -5,28 +5,6 @@ import (
 	"time"
 )
 
-//ReportReasonType 代表举报相关的原因
-type ReportReasonType map[int]string
-
-//ReportReasonKeyType 代表举报相关的原因的key
-type ReportReasonKeyType int
-
-//ReportReason 是举报的类别
-var ReportReason ReportReasonType = map[int]string{
-	0: "政治有害",
-	1: "引战",
-	2: "令人不适",
-}
-
-//HandleReason 代表着 存档原因/分类
-var HandleReason map[int]string = map[int]string{
-	0: "Admin Delete",
-	1: "Admin Ban",
-	2: "Admin unDelete",
-	3: "Admin unBan",
-	4: "User Delete",
-	5: "User Edit",
-}
 
 //Report 是举报相关的表
 type Report struct {

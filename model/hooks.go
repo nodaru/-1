@@ -4,6 +4,8 @@ import (
 	"gorm.io/gorm"
 )
 
+// TODO: 增加举报、喜欢、不喜欢后的同步更新
+
 //AfterCreate -> User, Set the first registered user to be superuser
 func (u *User) AfterCreate(tx *gorm.DB) (err error) {
 	if u.ID == 1 {
@@ -25,17 +27,18 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 
 //AfterCreate -> Comment, init the first comment
 func (c *Comment) AfterCreate(tx *gorm.DB) (err error) {
-	if c.ID == 1 {
-		err = tx.Model(c).Update("Status", state_block).Update("Curl","/null").Error
-	}else{
-		if c.RefComment.ID == 0{
-		err = tx.Model(c).Update("RefCommentID", 1).Error
-		}
+	if c.RefComment != nil &&c.RefComment.ID == 0{
+	err = tx.Model(c).Update("RefCommentID", 1).Error
 	}
 	return
 }
 
-//AfterCreate -> Post, init the first Post
+//BeforeCreate -> Post, init the first Post
+func (p *Post) BeforeCreate(tx *gorm.DB) (err error) {
+	return
+}
+
+//AfterCreate -> post, handle the owner of the post
 func (p *Post) AfterCreate(tx *gorm.DB) (err error) {
 	return
 }

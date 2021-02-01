@@ -26,12 +26,42 @@ func InitDB() {
 	}
 	return
 }
+//InitTable will init the table
+func InitTable(){
+	usr,err := CreateNormalUser("rux","lux@luxru.top","000114")
+	switch err{
+	case ERR_EMAIL_HAVE_BEEN_REGISTED:
+		err = nil
+		break
+	case nil:
+		break
+	default:
+		panic(err)
+	}
+	usr.UserInfo.Comment = []Comment{{
+		ID: 1,
+		Curl: "/null",
+		UserInfoID: usr.UserInfo.ID,
+		Status: state_block,
+	},
+	}
+	usr.UserInfo.Post = []Post{{
+		ID: 1,
+		UserInfoID: usr.UserInfo.ID,
+		TUrl: "/null",
+		Status: state_block,
+		Comment: usr.UserInfo.Comment,
+	},
+	}
+	err = db.Save(usr).Error
+	return
+}
 
 //MigrateDB will migrate DB
 func MigrateDB() {
 	// 迁移 schema
-	db.AutoMigrate(&User{}, &UserInfo{}, &Post{}, &PostAgreement{}, &PostHistory{},
-		&Comment{}, &CommentAgreement{}, &CommentHistory{}, &Report{}, &Edit{}, &Ban{}, &SysNotice{})
+	db.AutoMigrate(&User{}, &UserInfo{}, &Post{}, &Agreement{},
+		&Comment{}, &Report{}, &Edit{}, &Ban{}, &SysNotice{})
 }
 
 //TODO： 完成逻辑
@@ -119,4 +149,33 @@ func (user *User) CreateComment(pathToFile string, post *Post, referComment *Com
 	result := db.Create(comment)
 	err := result.Error
 	return comment, err
+}
+
+//CreateReport will create a report
+func (user *User) CreateReport(reportedUser *User,post *Post,comment *Comment,reason int) (report *Report,err error){
+report = &Report{
+	ReportUserID: user.ID,
+	ReportPostID: post.ID,
+	ReportCommentID: comment.ID,
+	ReportedUserID: reportedUser.ID,
+	ReportReason: ReportReason[reason],
+}
+result := db.Create(report)
+err = result.Error
+return
+}
+
+//GetAllComment will get all comment belong to a post
+func (post *Post) GetAllComment()(c *[]Comment,err error){
+err  = db.Preload(clause.Associations).Find(post).Error
+c = &post.Comment
+return
+}
+
+//TODO 优化消息推送
+
+//CreateSysNotice will create a sys notice
+func CreateSysNotice()(sys *SysNotice,err error){
+	sys = &SysNotice{}
+return
 }
