@@ -17,3 +17,11 @@ type SysNotice struct {
 	UpdatedAt        time.Time      `gorm:"index"`
 	DeletedAt        gorm.DeletedAt `gorm:"index"`
 }
+
+//TODO 优化消息推送
+
+//CreateSysNotice will create a sys notice
+func CreateSysNotice()(sys *SysNotice,err error){
+	sys = &SysNotice{}
+return
+}

@@ -1,8 +1,13 @@
 package model
 
 import (
-	"gorm.io/gorm"
+	"111/util"
+	"crypto/rand"
+	"encoding/hex"
 	"time"
+
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // User 表 包含着 参与讨论的对象
@@ -45,4 +50,38 @@ type Agreement struct {
 	CreatedAt time.Time      `gorm:"index"`
 	UpdatedAt time.Time      `gorm:"index"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
+//CreateNormalUser will create a normal user
+func CreateNormalUser(name string, email string, passwordEncyrpt string) (user *User, err error) {
+	salt := make([]byte, 20)
+	_, _err := rand.Read(salt)
+	if _err != nil {
+		panic(_err)
+	}
+	passwordEncyrpt = util.HashPass(passwordEncyrpt, hex.EncodeToString(salt))
+	user = &User{
+		Privilege:     normalUserPrivilege,
+		Salt:          hex.EncodeToString(salt),
+		EncryptedPass: passwordEncyrpt,
+		UserInfo: UserInfo{
+			NiceName: name,
+			Contact:  email,
+		},
+	}
+	result := db.Create(user)
+	err = result.Error
+	return
+}
+
+//GetUserByID will get a user struct by uid
+func GetUserByID(uid int) (user *User, err error) {
+	user = &User{}
+	result := db.Find(&user, uid)
+	if user.ID == 0 || result.RowsAffected == 0 {
+		err = ERR_USER_DOES_NOT_EXISTED
+	} else {
+		err = db.Preload("UserInfo.Post").Preload("UserInfo.Comment").Preload(clause.Associations).Find(&user).Error
+	}
+	return
 }

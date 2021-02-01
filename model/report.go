@@ -58,3 +58,18 @@ type Ban struct {
 	UpdatedAt   time.Time      `gorm:"index"`
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }
+
+
+//CreateReport will create a report
+func (user *User) CreateReport(reportedUser *User,post *Post,comment *Comment,reason int) (report *Report,err error){
+	report = &Report{
+		ReportUserID: user.ID,
+		ReportPostID: post.ID,
+		ReportCommentID: comment.ID,
+		ReportedUserID: reportedUser.ID,
+		ReportReason: ReportReason[reason],
+	}
+	result := db.Create(report)
+	err = result.Error
+	return
+	}
