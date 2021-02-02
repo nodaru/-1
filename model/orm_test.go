@@ -12,8 +12,8 @@ var (
 		pass     string
 		expected error
 	}{
-		{name: "aow", email: "admin@mails.tsinghua.edu.cn", pass: "124141241", expected: ERR_EMAIL_HAVE_BEEN_REGISTED},
-		{name: "rux", email: "pp@mails.tsinghua.edu.cn", pass: "124adaf1", expected: ERR_EMAIL_HAVE_BEEN_REGISTED},
+		{name: "aow", email: "admin@mails.tsinghua.edu.cn", pass: "124141241", expected: nil},
+		{name: "rux", email: "pp@mails.tsinghua.edu.cn", pass: "124adaf1", expected: nil},
 		{name: "rux", email: "pp@mails.tsinghua.edu.cn", pass: "124adaf1", expected: ERR_EMAIL_HAVE_BEEN_REGISTED},
 	}
 	case2 = []struct {

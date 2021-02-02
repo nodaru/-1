@@ -10,12 +10,13 @@ var db *gorm.DB
 func init() {
 	InitDB()
 	MigrateDB()
+	InitTable()
 }
 
 //InitDB will init db
 func InitDB() {
 	var err error
-	db, err = gorm.Open(sqlite.Open("D:/Lux/src/go/-1/test.db"), &gorm.Config{})
+	db, err = gorm.Open(sqlite.Open("./test.db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
